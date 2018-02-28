@@ -1,0 +1,123 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace InterfaceTest2
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            SaverAccount sa = new SaverAccount();//实例化一个普通账户
+            //普通账户实现接口1，具有存钱、取钱、查看账户的功能
+            sa.PayIn(1000);//普通账户能够存钱，存入1000
+            sa.Withdraw(500);//普通账户能够取钱，取出500
+            Console.WriteLine("普通卡账户余额:{0}",sa.Balance);
+
+            GoldAccount ga = new GoldAccount();//实例化一个金卡账户
+            ga.DealStartTip();//金卡账户还必须具有接口2的功能，为客户提供额外的服务
+            ga.PayIn(10000);//金卡账户具有所有账户的基本功能 存钱10000
+            ga.Withdraw(5000);//取钱500
+            Console.WriteLine("金卡账户余额:{0}", ga.Balance);
+            ga.DealStopTip();
+
+            Console.ReadLine();
+        }
+    }
+
+    //账户接口1（所有银行账户类都要继承此接口）
+    public interface IBankAccount
+    {
+        void PayIn(decimal amount);//存钱函数
+        bool Withdraw(decimal amount);//取钱函数
+        decimal Balance { get; }//账户余额
+    }
+
+    //账户接口2（高级银行账户要继承此接口）
+    public interface IBankAdvancedAccount
+    {
+        void DealStartTip();//交易开始提示功能
+        void DealStopTip();//交易结束提示功能
+    }
+
+    //账户类1,普通储蓄账户
+    public class SaverAccount : IBankAccount
+    {
+        private decimal balance;
+
+        public void PayIn(decimal account)
+        {
+            balance = balance + account;
+        }
+
+        public bool Withdraw(decimal amount)
+        {
+            if (balance > amount)
+            {
+                balance = balance - amount;
+                return true;
+            }
+            Console.WriteLine("余额不足!");
+            return false;
+        }
+
+        public decimal Balance
+        {
+            get
+            {
+                return balance;
+            }
+        }
+
+        public override string ToString()
+        {
+            return String.Format("Saver Bank balance:",balance);
+        }
+    }
+
+    //账户类2，金卡账户
+    public class GoldAccount : IBankAccount, IBankAdvancedAccount
+    {
+        private decimal balance;
+
+        public void PayIn(decimal account)
+        {
+            balance = balance + account;
+        }
+
+        public bool Withdraw(decimal amount)
+        {
+            if (balance > amount)
+            {
+                balance = balance - amount;
+                return true;
+            }
+            Console.WriteLine("余额不足!");
+            return false;
+        }
+
+        public decimal Balance
+        {
+            get
+            {
+                return balance;
+            }
+        }
+
+        public override string ToString()
+        {
+            return String.Format("Saver Bank balance:", balance);
+        }
+
+        public void DealStartTip()//金卡客户，在交易开始的时候，必须实现这个函数
+        {
+            Console.WriteLine("交易开始，请注意周围环境");
+        }
+
+        public void DealStopTip()//金卡客户，在交易结束的时候，必须实现这个函数
+        {
+            Console.WriteLine("交易结束，请带好您的贵重物品，欢迎下次光临!");
+        }
+    }
+}
