@@ -1,0 +1,100 @@
+[Solution 1]
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Testcase
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            string picUrl = "http://www.baidu.com/img/superlogo_c4d7df0a003d3db9b65e9ef0fe6da1ec.png";
+            string savePath = "E:\\pajon\\bd.jpg";
+            if (File.Exists(savePath))
+                File.Delete(savePath);
+
+            WebClient client = new WebClient();
+            client.DownloadFile(picUrl, savePath);
+
+            if (File.Exists(savePath))
+                Console.WriteLine("Draw picture Successful!");
+            else
+                Console.WriteLine("Error, Could not draw picture!");
+                Console.WriteLine("Maybe something wrong with website!");
+            Console.ReadKey();
+        }
+    }
+}
+========================================================================================
+[Solution 2]
+using System;
+using System.Net;
+using System.IO;
+using System.Text;
+
+namespace mynamespace
+{
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            DrawPicture Down = new DrawPicture();
+            string picUrl = "http://www.baidu.com/img/superlogo_c4d7df0a003d3db9b65e9ef0fe6da1ec.png";
+            string savePath = "E:\\pajon\\bd.jpg";
+
+            if (Down.DrawPictureMethod(picUrl, savePath))
+            {
+                Console.WriteLine("Successfully!");                
+            }
+            else
+            {
+                Console.WriteLine("Error, Could not draw picture!");
+                Console.WriteLine("Maybe something wrong wtih website.");
+            }
+            Console.ReadKey();
+        }
+    }
+    public class DrawPicture
+    {
+        public bool DrawPictureMethod(string picUrl, string savePath)
+        {
+            bool value = false;
+            WebResponse response = null;
+            byte[] buffer = new byte[1024];
+            Stream outStream = null;
+            Stream inStream = null;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(picUrl);
+            response = request.GetResponse();
+                        
+            try
+            {
+                if (File.Exists(savePath))
+                    File.Delete(savePath);
+                outStream = File.Create(savePath);
+                inStream = response.GetResponseStream();
+                int l;
+                do
+                {
+                    l = inStream.Read(buffer, 0, buffer.Length);
+                    if (l > 0)
+                        outStream.Write(buffer, 0, l);
+                } while (l > 0);
+                value = true;
+            }
+            finally
+            {
+                if (outStream != null) outStream.Close();
+                if (inStream != null) inStream.Close();
+            }            
+            return value;
+        }
+    }
+}
